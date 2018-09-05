@@ -128,7 +128,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 			profile.followers.add(user)
 			return Response({"status": "profile followed"})
 
-
+	# Topics of the chatgroups that are followed by the user		
 	@detail_route()
 	def topics(self, request, *args, **kwargs):
 		profile = self.get_object()
