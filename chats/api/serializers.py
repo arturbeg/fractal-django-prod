@@ -152,11 +152,17 @@ class TopicSerializer(serializers.ModelSerializer):
 	# Use chatgroup URL later
 	chatgroup 				= ChatGroupSerializer()	
 
+	owner 					= serializers.SerializerMethodField()
+
+	upvoted					= serializers.SerializerMethodField()
+	downvoted				= serializers.SerializerMethodField()
+	saved					= serializers.SerializerMethodField()
+
 
 	class Meta:
 		model 				= Topic
 		#fields 				= [ 'url', 'chatgroup', 'id', 'name', 'owner', 'about', 'description', 'label', 'timestamp', 'avatar', 'arrow_ups', 'arrow_downs', 'saves', 'online_participants']
-		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'participants', 'most_recent_message']
+		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'participants', 'most_recent_message', 'owner', 'upvoted', 'downvoted', 'saved']
 		# read_only_fields 	= ['pk', 'owner']
 		lookup_field		= 'label'
 		# extra_kwargs		= {
@@ -169,8 +175,21 @@ class TopicSerializer(serializers.ModelSerializer):
 		# 	'arrow_downs':  		{'lookup_field': 'username'},
 		# }	
 
+	def get_saved(self, obj):
+		request = self.context.get("request")
+		return obj.saved(request)	
+		
+	def get_upvoted(self, obj):
+		request = self.context.get("request")
+		return obj.upvoted(request)
+
+	def get_downvoted(self, obj):
+		request = self.context.get("request")
+		return obj.downvoted(request)  	
+
 	def get_most_recent_message(self, obj):
-		return obj.most_recent_message()	
+		message = obj.most_recent_message()
+		return message	
 
 	def get_rating(self, obj):
 		return obj.rating()
@@ -180,6 +199,13 @@ class TopicSerializer(serializers.ModelSerializer):
 		participantsSerializer = ProfileSerializer(participants, many=True)
 		participantsSerializerData = participantsSerializer.data
 		return participantsSerializerData
+
+	def get_owner(self, obj):
+		owner = obj.owner.profile
+		ownerSerializer = ProfileSerializer(owner)
+		ownerSerializerData = ownerSerializer.data
+
+		return ownerSerializerData
 
 
 

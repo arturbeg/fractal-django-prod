@@ -1,7 +1,7 @@
 from django.db import models
 from chats.models import ChatGroup, LocalChat, Topic, GlobalChat
 from django.conf import settings
-
+from interactive.api.serializers import MessageSerializer
 
 User = settings.AUTH_USER_MODEL
 
@@ -32,11 +32,24 @@ class Message(models.Model):
 		return self.topic.name + ' : ' + self.user.username + ' : ' + self.text
 
 
+	def serialized(self):
+		messageSerializer = MessageSerializer(self)
+
+		return messageSerializer.data
+		
 	@property
 	def owner(self):
 		return self.user
 
 	def likers_count(self):
 		return self.likers.count()	
+
+	def is_shared(self):
+		try:
+			post = self.post
+		except:
+			return False
+		else:
+			return True			
 
 	# Add the rest of the methods later (while working on the angular app)		

@@ -15,7 +15,6 @@ from .serializers import MessageSerializer, PostSerializer, PostCommentSerialize
 
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticated
-
 # Configure post saves + add post_save signals where necessary
 # Reconfigure permissions if necessary
 
@@ -51,10 +50,18 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 		if message.likers.filter(id=user.id).exists():
 			message.likers.remove(user)
-			return Response({'status': 'message unliked'})
+
+			messageSerializer = MessageSerializer(message)
+			messageSerializerData = messageSerializer.data
+
+			return Response(messageSerializerData)
 		else:
 			message.likers.add(user)
-			return Response({'status': 'message liked'})
+
+			messageSerializer = MessageSerializer(message)
+			messageSerializerData = messageSerializer.data
+
+			return Response(messageSerializerData)
 
 
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
@@ -63,13 +70,23 @@ class MessageViewSet(viewsets.ModelViewSet):
 		user = request.user
 		message = self.get_object()
 
+
+
 		if Post.objects.filter(message=message).exists():
 			Post.objects.filter(message=message).delete()
-			return Response({'status': 'message unshared'}) 
+			
+			messageSerializer = MessageSerializer(message)
+			messageSerializerData = messageSerializer.data
+
+			return Response(messageSerializerData)
 		else:
 			post = Post.objects.create(message=message)
 			post.save()
-			return Response({'status': 'message shared'}) 
+
+			messageSerializer = MessageSerializer(message)
+			messageSerializerData = messageSerializer.data
+
+			return Response(messageSerializerData)
 
 			
 

@@ -228,15 +228,31 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 		if topic.arrow_ups.filter(id=user.id).exists():
 			topic.arrow_ups.remove(user)
-			return Response({"status": "topic upvote is removed"})
+
+			topicSerializer = TopicSerializer(topic, context={'request':request})
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 		elif topic.arrow_downs.filter(id=user.id).exists():
 			topic.arrow_downs.remove(user)
 			topic.arrow_ups.add(user)
-			return Response({"status": "topic downvote is removed, topic is upvoted"})
+
+
+			# turn topic object into a serialized response
+			topicSerializer = TopicSerializer(topic, context={'request':request})
+			topicSerializerData = topicSerializer.data
+			return Response(topicSerializerData)
 
 		else:
 			topic.arrow_ups.add(user)
-			return Response({"status": "topic is upvoted"})
+
+
+			topicSerializer = TopicSerializer(topic, context={'request':request})
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 
 
 
@@ -248,14 +264,32 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 		if topic.arrow_downs.filter(id=user.id).exists():
 			topic.arrow_downs.remove(user)
-			return Response({"status": "topic downvote is removed"})
+
+			topicSerializer = TopicSerializer(topic, context={'request':request})
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
+
 		elif topic.arrow_ups.filter(id=user.id).exists():
 			topic.arrow_ups.remove(user)
 			topic.arrow_downs.add(user)
-			return Response({"status": "topic upvote is removed, topic is downvoted"})
+			
+
+			topicSerializer = TopicSerializer(topic, context={'request':request})
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 		else:
-			topic.arrow_downs.add(user)
-			return Response({"status": "topic is downvoted"}) 		
+			
+			topic.arrow_downs.add(user)	
+
+			topicSerializer = TopicSerializer(topic, context={'request':request})
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)		
 
 
 
@@ -266,10 +300,20 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 		if topic.saves.filter(id=user.id).exists():
 			topic.saves.remove(user)
-			return Response({"status":"topic removed from saves"})
+			
+			topicSerializer = TopicSerializer(topic, context={'request':request})
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 		else:
 			topic.saves.add(user)
-			return Response({"status":"topic added to saves"})
+			
+			topicSerializer = TopicSerializer(topic, context={'request':request})
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 
 
 
@@ -280,10 +324,19 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 		if topic.online_participants.filter(id=user.id).exists():
 			
-			return Response({"status":"no changes to online_participants"})
+			topicSerializer = TopicSerializer(topic)
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 		else:
 			topic.online_participants.add(user)
-			return Response({"status":"topic added to online_participants"})
+			
+			topicSerializer = TopicSerializer(topic)
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 				
 
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
@@ -293,9 +346,19 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 		if topic.online_participants.filter(id=user.id).exists():
 			topic.online_participants.remove(user)
-			return Response({"status":"topic removed from online_participants"})
+			
+			topicSerializer = TopicSerializer(topic)
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 		else:
-			return Response({"status":"no changes to online_participants"})	
+			
+			topicSerializer = TopicSerializer(topic)
+			topicSerializerData = topicSerializer.data
+
+
+			return Response(topicSerializerData)
 
 					
 	# # get list of messages of the topic		

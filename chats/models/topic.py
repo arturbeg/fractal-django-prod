@@ -3,6 +3,7 @@ from .chatgroup import ChatGroup
 from django.conf import settings
 from rest_framework.reverse import reverse as api_reverse
 from .localchat import LocalChat
+
 User = settings.AUTH_USER_MODEL
 
 
@@ -32,8 +33,9 @@ class Topic(models.Model):
 		return self.arrow_ups.count() - self.arrow_downs.count()
 
 	def most_recent_message(self):
-		message = self.topic_messages.all()[0]
-		return message.text 	
+		message = self.topic_messages.latest('id')
+
+		return message.serialized()
 
 	# not elegant	
 	def participants(self):
@@ -41,7 +43,29 @@ class Topic(models.Model):
 		for participant in self.online_participants.all():
 			participants.append(participant.profile)
 		
-		return participants		
+		return participants
+
+	def upvoted(self, request):
+		user = request.user
+		if self.arrow_ups.filter(id=user.id).exists():
+			return True
+		else:
+			return False				
+
+	def downvoted(self, request):
+		user = request.user
+		if self.arrow_downs.filter(id=user.id).exists():
+			return True
+		else:
+			return False
+
+	def saved(self, request):
+		user = request.user
+		if self.saves.filter(id=user.id).exists():
+			return True
+		else:
+			return False
+
 
 # class Topic(LocalChat):
 	# chatgroup = models.ForeignKey(ChatGroup, on_delete=models.CASCADE, related_name="topics")
