@@ -1,7 +1,6 @@
 from django.db import models
 from chats.models import ChatGroup, LocalChat, Topic, GlobalChat
 from django.conf import settings
-from interactive.api.serializers import MessageSerializer
 
 User = settings.AUTH_USER_MODEL
 
@@ -32,10 +31,11 @@ class Message(models.Model):
 		return self.topic.name + ' : ' + self.user.username + ' : ' + self.text
 
 
-	def serialized(self):
-		messageSerializer = MessageSerializer(self)
+	# def serialized(self):
+	# 	# messageSerializer = MessageSerializer(self)
 
-		return messageSerializer.data
+	# 	# return messageSerializer.data
+	# 	return {'hi':'hi'}
 		
 	@property
 	def owner(self):

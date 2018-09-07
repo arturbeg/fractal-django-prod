@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+	from django.contrib.auth.models import User
 from rest_framework import serializers
 
 # Chats App models
@@ -6,6 +6,8 @@ from rest_framework import serializers
 
 # Interactive App models
 from interactive.models import Message, Post, PostComment, Notification
+
+from chats.models import Topic, Profile
 
 from chats.api.serializers import ProfileSerializer
 

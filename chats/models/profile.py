@@ -15,6 +15,8 @@ class Profile(models.Model):
 
     timestamp 	= models.DateTimeField(auto_now_add=True)
 
+    # shares      = 
+
     label       = models.SlugField(unique=True) # redundunt -> delete later (owner didn't really work)
 
 

@@ -7,24 +7,6 @@ from .validators import lowercase
 
 
 
-# class ProfileSerializer(serializers.HyperlinkedModelSerializer):
-# 	class Meta:
-# 		model 				= Profile
-# 		fields 				= [
-# 								'url', 'id', 'user', 'followers', 'about', 
-# 							    'avatar', 'timestamp', 'label'
-# 							  ] 
-# 		read_only_fields 	= ['url', 'user', 'id', 'timestamp']
-# 		lookup_field		= 'label'
-# 		extra_kwargs = {
-
-# 			'url':			{'lookup_field': 'label'},		
-# 			'user':			{'lookup_field': 'username'},
-# 			'followers':	{'lookup_field': 'username'},
-
-# 		}
-
-
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 	
 	followers_count 	= serializers.SerializerMethodField()	
@@ -56,10 +38,6 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 	# 	return obj.posts_count()			
 
 
-
-		
-
-
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
@@ -88,7 +66,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 	def validate_username(self, value):
 
 		return lowercase(value)
-
 
 
 # class ChatGroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -209,8 +186,6 @@ class TopicSerializer(serializers.ModelSerializer):
 
 
 
-
-
 						
 class LocalChatSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
@@ -224,16 +199,7 @@ class LocalChatSerializer(serializers.HyperlinkedModelSerializer):
 			'online_participants':  {'lookup_field': 'username'},
 			'saves':  				{'lookup_field': 'username'},
 		}
-	
-	
 
-	# def validate_name(self, value):
-	# 	qs = Topic.objects.filter(name__iexact=value)
-	# 	if self.instance:
-	# 		qs = qs.exclude(pk=self.instance.pk)
-	# 	if qs.exists():
-	# 		raise serializers.ValidationError("This name has already been used")	
-	# 	return value	
 
 
 class GlobalChatSerializer(serializers.HyperlinkedModelSerializer):

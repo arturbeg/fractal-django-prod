@@ -4,6 +4,7 @@ from django.conf import settings
 from rest_framework.reverse import reverse as api_reverse
 from .localchat import LocalChat
 
+
 User = settings.AUTH_USER_MODEL
 
 
@@ -35,7 +36,7 @@ class Topic(models.Model):
 	def most_recent_message(self):
 		message = self.topic_messages.latest('id')
 
-		return message.serialized()
+		return message.text
 
 	# not elegant	
 	def participants(self):
