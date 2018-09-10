@@ -1,4 +1,4 @@
-	from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 # Chats App models
@@ -11,17 +11,24 @@ from chats.models import Topic, Profile
 
 from chats.api.serializers import ProfileSerializer
 
+from django.utils.timesince import timesince
 
 
 # TODO: change back to HyperLinked
 class MessageSerializer(serializers.ModelSerializer):
 	
 	likers_count 	= serializers.SerializerMethodField()	
-	topic 			= serializers.SlugRelatedField(slug_field='label', queryset=Topic.objects.all())
+	
+	topic			= serializers.SlugRelatedField(slug_field='label', queryset=Topic.objects.all())
 	# sender -> same as user, but expanded version
 
 	sender			= serializers.SerializerMethodField()
+	
 	shared			= serializers.SerializerMethodField()
+
+	topic_object 	= serializers.SerializerMethodField()
+
+	timestamp_human	= serializers.SerializerMethodField()
 
 	class Meta:
 		model = Message
@@ -30,12 +37,20 @@ class MessageSerializer(serializers.ModelSerializer):
 
 		# read_only_fields = ['user', 'pk', 'user', 'timestamp']
 		# sender is the profile of the user presented in a nested mannder
-		fields = ['id', 'text', 'timestamp', 'topic', 'user', 'sender', 'likers_count', 'shared']
+		fields = ['id', 'text', 'timestamp', 'topic_object', 'user', 'sender', 'likers_count', 'shared', 'timestamp_human', 'topic']
 
 		read_only_fields = ['pk', 'timestamp']
 
 		lookup_field = 'id'
 
+	def get_timestamp_human(self, obj):
+		return timesince(obj.timestamp)
+
+
+	def get_topic_object(self, obj):
+		request = self.context.get("request")
+		return obj.get_serialized_topic(request)	
+		
 	def get_shared(self, obj):
 		return obj.is_shared()	
 
@@ -74,11 +89,19 @@ class PostSerializer(serializers.ModelSerializer):
 	
 	message = MessageSerializer()
 
+	timestamp_human	= serializers.SerializerMethodField()
+
+
 	class Meta:
 		model = Post
-		fields = ['message', 'timestamp']
+		fields = ['message', 'timestamp', 'timestamp_human']
 
-		read_only_fields = ['url', 'pk', 'timestamp', 'message']
+		read_only_fields = ['url', 'pk', 'timestamp', 'message', 'timestamp_human']
+
+
+	
+	def get_timestamp_human(self, obj):
+		return timesince(obj.timestamp)	
 
 
 

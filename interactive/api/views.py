@@ -42,6 +42,10 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 		return queryset_list	
 
+
+	def get_serializer_context(self):
+		return {'request': self.request}	
+
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
 	def like(self, request, *args, **kwargs):
 
@@ -51,14 +55,14 @@ class MessageViewSet(viewsets.ModelViewSet):
 		if message.likers.filter(id=user.id).exists():
 			message.likers.remove(user)
 
-			messageSerializer = MessageSerializer(message)
+			messageSerializer = MessageSerializer(message, context={'request': self.request})
 			messageSerializerData = messageSerializer.data
 
 			return Response(messageSerializerData)
 		else:
 			message.likers.add(user)
 
-			messageSerializer = MessageSerializer(message)
+			messageSerializer = MessageSerializer(message, context={'request': self.request})
 			messageSerializerData = messageSerializer.data
 
 			return Response(messageSerializerData)
@@ -75,7 +79,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 		if Post.objects.filter(message=message).exists():
 			Post.objects.filter(message=message).delete()
 			
-			messageSerializer = MessageSerializer(message)
+			messageSerializer = MessageSerializer(message, context={'request': self.request})
 			messageSerializerData = messageSerializer.data
 
 			return Response(messageSerializerData)
@@ -83,7 +87,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 			post = Post.objects.create(message=message)
 			post.save()
 
-			messageSerializer = MessageSerializer(message)
+			messageSerializer = MessageSerializer(message, context={'request': self.request})
 			messageSerializerData = messageSerializer.data
 
 			return Response(messageSerializerData)

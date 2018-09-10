@@ -1,6 +1,8 @@
 from django.db import models
 from chats.models import ChatGroup, LocalChat, Topic, GlobalChat
 from django.conf import settings
+from chats.api.serializers import TopicSerializer
+
 
 User = settings.AUTH_USER_MODEL
 
@@ -40,6 +42,13 @@ class Message(models.Model):
 	@property
 	def owner(self):
 		return self.user
+
+	def get_serialized_topic(self, request):
+		topic = self.topic
+		topicSerializer = TopicSerializer(topic, context={"request": request})
+		topicSerializerData = topicSerializer.data
+
+		return topicSerializerData
 
 	def likers_count(self):
 		return self.likers.count()	
