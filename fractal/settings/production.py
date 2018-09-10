@@ -7,7 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'hcnqcovsm8d8lzb5g5r)!350k4q9=2sb=7o9oe*(z54@m^sdo@'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'hcnqcovsm8d8lzb5g5r!350k4q9=2sb=7o9oe*z54@m^sdo@')  
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -136,7 +136,6 @@ ROOT_URLCONF = 'fractal.urls'
 WSGI_APPLICATION = 'fractal.wsgi.application'
 
 
-
 MEDIA_URL = 'media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'chats/media')
@@ -145,7 +144,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'chats/media')
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'chats/media')
