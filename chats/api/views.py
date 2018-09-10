@@ -132,6 +132,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 	@detail_route()
 	def topics(self, request, *args, **kwargs):
 		profile = self.get_object()
+		
 		queryset = Topic.objects.filter(chatgroup__members__id=profile.user.id)
 
 		serializer = TopicSerializer(queryset, many=True, context={'request':request})
@@ -215,11 +216,15 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 		serializer.save(owner=self.request.user)
 
+	
+	def post(self, request, *args, **kwargs):
+		return self.create(request, *args, **kwargs)
+
+
+	def get_serializer_context(self):
+		return {'request': self.request}
 	# Extra actions for routing
 	
-
-	
-
 	
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
 	def upvote(self, request, *args, **kwargs):
