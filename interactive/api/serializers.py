@@ -83,8 +83,6 @@ class MessageSerializer(serializers.ModelSerializer):
 		return value	
 
 
-
-
 class PostSerializer(serializers.ModelSerializer):
 	
 	message = MessageSerializer()
