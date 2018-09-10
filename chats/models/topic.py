@@ -34,9 +34,15 @@ class Topic(models.Model):
 		return self.arrow_ups.count() - self.arrow_downs.count()
 
 	def most_recent_message(self):
-		message = self.topic_messages.latest('id')
 
-		return message.text
+		try:
+			message = self.topic_messages.latest('id')
+			return message.text
+		except:
+			return "No messages in the chat"
+				
+
+		
 
 	# not elegant	
 	def participants(self):
