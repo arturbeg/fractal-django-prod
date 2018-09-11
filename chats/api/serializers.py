@@ -16,14 +16,19 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 	followed			= serializers.SerializerMethodField()
 
+	user_id				= serializers.SerializerMethodField()			
+
 	class Meta:
 		model 				= Profile
 		fields 				= [
 								'id', 'about', 'label', 'followers_count', 'following_count',
-								'chatgroups_count', 'followed'
+								'chatgroups_count', 'followed', 'user_id'
 							  ] 
 		read_only_fields 	= ['id']
 		lookup_field		= 'label'
+
+	def get_user_id(self, obj):
+		return obj.user.id
 
 	def get_followed(self, obj):
 		request = self.context.get("request")
