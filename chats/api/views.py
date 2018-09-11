@@ -182,7 +182,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 		return Response(serializer.data)
 
-	# recent activity posts	
 	@detail_route()
 	def activity(self, request, *args, **kwargs):
 		profile = self.get_object()

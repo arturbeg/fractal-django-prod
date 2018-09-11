@@ -59,7 +59,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 	def get_sender(self, obj):
 		profile = obj.user.profile
-		profileSerializer = ProfileSerializer(profile)
+		profileSerializer = ProfileSerializer(profile, context={'request':self.context.get("request")})
 		profileSerializerData = profileSerializer.data
 		return profileSerializerData	
 	# validate that the message has content	
