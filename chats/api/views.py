@@ -130,7 +130,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 			profile.followers.add(user)
 			profileSerializer = self.get_serializer(profile, context={'request':request})
 
-			return Response(profileSerializer.data)
+			return Response(profileSerializer.data)	
 
 	# Topics of the chatgroups that are followed by the user		
 	@detail_route()

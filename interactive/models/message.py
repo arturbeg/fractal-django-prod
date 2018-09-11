@@ -30,7 +30,8 @@ class Message(models.Model):
 	
 
 	def __str__(self):
-		return self.topic.name + ' : ' + self.user.username + ' : ' + self.text
+		# return self.topic.name + ' : ' + self.user.username + ' : ' + self.text
+		return self.user.username + ' : ' + self.text		
 
 
 	# def serialized(self):

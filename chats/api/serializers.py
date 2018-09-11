@@ -13,6 +13,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 	following_count		= serializers.SerializerMethodField()
 	# posts_count			= serializers.SerializerMethodField()
 	chatgroups_count	= serializers.SerializerMethodField()
+
 	followed			= serializers.SerializerMethodField()
 
 	class Meta:
@@ -115,7 +116,7 @@ class ChatGroupSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_owner(self, obj):
 		owner = obj.ownerProfile() # getting the profile of the owner
-		ownerSerializer = ProfileSerializer(owner)
+		ownerSerializer = ProfileSerializer(owner, context={'request':self.context.get("request")})
 		ownerSerializerData = ownerSerializer.data
 		return ownerSerializerData
 
@@ -176,13 +177,13 @@ class TopicSerializer(serializers.ModelSerializer):
 
 	def get_participants(self, obj):
 		participants = obj.participants()	
-		participantsSerializer = ProfileSerializer(participants, many=True)
+		participantsSerializer = ProfileSerializer(participants, many=True, context={'request':self.context.get("request")})
 		participantsSerializerData = participantsSerializer.data
 		return participantsSerializerData
 
 	def get_owner(self, obj):
 		owner = obj.owner.profile
-		ownerSerializer = ProfileSerializer(owner)
+		ownerSerializer = ProfileSerializer(owner, context={'request':self.context.get("request")})
 		ownerSerializerData = ownerSerializer.data
 
 		return ownerSerializerData
