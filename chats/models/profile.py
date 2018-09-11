@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
+# from chats.api.serializers import ProfileSerializer
 User = settings.AUTH_USER_MODEL
 
 
@@ -28,6 +29,9 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    # def get_serialized_profile(self, request):
+    #     profileSerializer = ProfileSerializer(self, context={'request':request})
+    #     return profileSerializer.data
     
     @property
     def owner(self):

@@ -121,10 +121,16 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 		if profile.followers.filter(id=user.id).exists():
 			profile.followers.remove(user)
-			return Response({"status": "profile unfollowed"})
+
+			
+			profileSerializer = self.get_serializer(profile, context={'request':request})
+
+			return Response(profileSerializer.data)
 		else:
 			profile.followers.add(user)
-			return Response({"status": "profile followed"})
+			profileSerializer = self.get_serializer(profile, context={'request':request})
+
+			return Response(profileSerializer.data)
 
 	# Topics of the chatgroups that are followed by the user		
 	@detail_route()
