@@ -13,17 +13,20 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 	following_count		= serializers.SerializerMethodField()
 	# posts_count			= serializers.SerializerMethodField()
 	chatgroups_count	= serializers.SerializerMethodField()
-
+	followed			= serializers.SerializerMethodField()
 
 	class Meta:
 		model 				= Profile
 		fields 				= [
 								'id', 'about', 'label', 'followers_count', 'following_count',
-								'chatgroups_count'
+								'chatgroups_count', 'followed'
 							  ] 
 		read_only_fields 	= ['id']
 		lookup_field		= 'label'
 
+	def get_followed(self, obj):
+		request = self.context.get("request")
+		return obj.followed(request)		
 	
 	def get_followers_count(self, obj):
 		return obj.followers_count()

@@ -111,6 +111,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
 	pagination_class	= CustomPageNumberPagination
 	lookup_field		= 'label'
 
+	def get_serializer_context(self):
+		return {'request': self.request}
 
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
 	def follow(self, request, *args, **kwargs):

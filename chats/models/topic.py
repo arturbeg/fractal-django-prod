@@ -28,7 +28,7 @@ class Topic(models.Model):
 
 
 	def __str__(self):
-		return self.name
+		return self.name	
 
 	def rating(self):
 		return self.arrow_ups.count() - self.arrow_downs.count()

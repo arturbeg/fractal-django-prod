@@ -65,6 +65,14 @@ class Profile(models.Model):
     def chatgroups_count(self):
         return self.user.is_member.count()
 
+
+    def followed(self, request):
+        user = request.user
+        if self.followers.filter(id=user.id).exists():
+            return True
+        else:
+            return False        
+
         
 
 def post_save_user_receiver(sender, instance, created, *args, **kwargs):
