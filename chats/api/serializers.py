@@ -99,16 +99,22 @@ class ChatGroupSerializer(serializers.HyperlinkedModelSerializer):
 
 	owner				= serializers.SerializerMethodField()
 
+	followed   			= serializers.SerializerMethodField()
+
 	class Meta:
 		model 				= ChatGroup
-		fields 				= ['id', 'name', 'about', 'description', 'label', 'followers_count', 'topics_count', 'localchats_count', 'timestamp', 'owner']
-		read_only_fields	= ['id', 'label', 'followers_count']
+		fields 				= ['id', 'name', 'about', 'description', 'label', 'followers_count', 'topics_count', 'localchats_count', 'timestamp', 'owner', 'followed']
+		read_only_fields	= ['id', 'label', 'followers_count', 'followed']
 		lookup_field		= 'label'
 		# extra_kwargs		= {
 		# 	'url': 	 	{'lookup_field': 'label'},
 		# 	'owner': 	{'lookup_field': 'username'},
 		# 	'members':  {'lookup_field': 'username'},
 		# }
+
+	def get_followed(self, obj):
+		request = self.context.get("request")
+		return obj.followed(request)		
 
 	def get_followers_count(self, obj):
 		return obj.followers_count()

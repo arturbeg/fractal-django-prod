@@ -16,11 +16,18 @@ class ChatGroup(models.Model):
 
 	avatar 		= models.ImageField(upload_to="chatgroup_avatar", blank=True, null=True)
 
-	label 		= models.SlugField(unique=True, blank=False) # unique way to name a chatgroup in the url
+	label 		= models.SlugField(unique=True, blank=False)
 
 	# methods will be added later
 	def __str__(self):
 		return self.name
+
+	def followed(self, request):
+		user = request.user
+		if self.members.filter(id=user.id).exists():
+			return True
+		else:
+			return False	 
 
 	def followers_count(self):
 		return self.members.count()	

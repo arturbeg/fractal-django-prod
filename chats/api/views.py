@@ -60,10 +60,15 @@ class ChatGroupViewSet(viewsets.ModelViewSet):
 
 		if chatgroup.members.filter(id=user.id).exists():
 			chatgroup.members.remove(user)
-			return Response({'status': 'chatgroup unfollowed'})
+
+			chatGroupSerializer = ChatGroupSerializer(chatgroup, context={'request':request})
+
+			return Response(chatGroupSerializer.data)
 		else:
 			chatgroup.members.add(user)
-			return Response({'status': 'chatgroup followed'})
+			
+			chatGroupSerializer = ChatGroupSerializer(chatgroup, context={'request':request})
+			return Response(chatGroupSerializer.data)
 
 	@detail_route(methods=['get'], permission_classes = [IsAuthenticated])
 	def topics(self, request, *args, **kwargs):
