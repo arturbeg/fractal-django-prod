@@ -142,7 +142,8 @@ class TopicSerializer(serializers.ModelSerializer):
 	participants    		= serializers.SerializerMethodField()
 	most_recent_message		= serializers.SerializerMethodField()
 	# Use chatgroup URL later
-	chatgroup 				= ChatGroupSerializer()	
+	chatgroup_object		= serializers.SerializerMethodField()
+	chatgroup			= serializers.SlugRelatedField(slug_field='label', queryset=ChatGroup.objects.all())	
 
 	owner 					= serializers.SerializerMethodField()
 
@@ -154,8 +155,8 @@ class TopicSerializer(serializers.ModelSerializer):
 	class Meta:
 		model 				= Topic
 		#fields 				= [ 'url', 'chatgroup', 'id', 'name', 'owner', 'about', 'description', 'label', 'timestamp', 'avatar', 'arrow_ups', 'arrow_downs', 'saves', 'online_participants']
-		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'participants', 'most_recent_message', 'owner', 'upvoted', 'downvoted', 'saved']
-		# read_only_fields 	= ['pk', 'owner']
+		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'chatgroup_object', 'participants', 'most_recent_message', 'owner', 'upvoted', 'downvoted', 'saved']
+		read_only_fields	= ['label']
 		lookup_field		= 'label'
 		# extra_kwargs		= {
 		# 	'url': 	 				{'lookup_field': 'label'},
@@ -166,6 +167,12 @@ class TopicSerializer(serializers.ModelSerializer):
 		# 	'arrow_ups':  			{'lookup_field': 'username'},
 		# 	'arrow_downs':  		{'lookup_field': 'username'},
 		# }	
+
+	def get_chatgroup_object(self, obj):
+		request = self.context.get("request")	
+		chatgroup = obj.chatgroup
+		chatgroupSerializer = ChatGroupSerializer(chatgroup, context={'request':request})
+		return chatgroupSerializer.data
 
 	def get_saved(self, obj):
 		request = self.context.get("request")
@@ -198,8 +205,6 @@ class TopicSerializer(serializers.ModelSerializer):
 		ownerSerializerData = ownerSerializer.data
 
 		return ownerSerializerData
-
-
 
 						
 class LocalChatSerializer(serializers.HyperlinkedModelSerializer):
