@@ -104,7 +104,7 @@ class ChatGroupSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model 				= ChatGroup
 		fields 				= ['id', 'name', 'about', 'description', 'label', 'followers_count', 'topics_count', 'localchats_count', 'timestamp', 'owner', 'followed']
-		read_only_fields	= ['id', 'label', 'followers_count', 'followed']
+		read_only_fields	= ['id', 'label', 'followers_count', 'followed', 'description']
 		lookup_field		= 'label'
 		# extra_kwargs		= {
 		# 	'url': 	 	{'lookup_field': 'label'},
