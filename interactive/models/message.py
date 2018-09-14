@@ -27,6 +27,7 @@ class Message(models.Model):
 
 	timestamp 		= models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
+	subtopics		= models.ManyToManyField(Topic, blank=True, related_name="referencing_messages")
 	
 
 	def __str__(self):

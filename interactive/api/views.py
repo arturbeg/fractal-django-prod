@@ -46,6 +46,21 @@ class MessageViewSet(viewsets.ModelViewSet):
 	def get_serializer_context(self):
 		return {'request': self.request}	
 
+
+	@detail_route(methods=['post'], permission_classes = [IsAuthenticated])	
+	def new_subtopic(self, request, *args, **kwargs):
+		message = self.get_object()
+		topic_label = request.data['topic_label']
+		print(request.data)
+		# print("This is the topic label " + topic_label)
+		topic = Topic.objects.get(label=topic_label)
+ 
+		message.subtopics.add(topic)
+
+		messageSerializer = MessageSerializer(message, context={'request': self.request})	
+
+		return Response(messageSerializer.data)
+
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
 	def like(self, request, *args, **kwargs):
 

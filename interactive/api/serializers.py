@@ -30,6 +30,12 @@ class MessageSerializer(serializers.ModelSerializer):
 
 	timestamp_human	= serializers.SerializerMethodField()
 
+	# subtopics		= serializers.SerializerMethodField()
+
+	# subtopics       = serializers.SlugRelatedField(slug_field='label', queryset=Topic.objects.all(), many=True)
+
+	subtopics    	= serializers.SerializerMethodField()
+
 	class Meta:
 		model = Message
 		# fields = ['url', 'pk', 'user', 'globalchat', 'localchat', 'topic', 'text', 'photo', 
@@ -37,11 +43,15 @@ class MessageSerializer(serializers.ModelSerializer):
 
 		# read_only_fields = ['user', 'pk', 'user', 'timestamp']
 		# sender is the profile of the user presented in a nested mannder
-		fields = ['id', 'text', 'timestamp', 'topic_object', 'user', 'sender', 'likers_count', 'shared', 'timestamp_human', 'topic']
+		fields = ['id', 'text', 'timestamp', 'topic_object', 'user', 'sender', 'likers_count', 'shared', 'timestamp_human', 'topic', 'subtopics']
 
 		read_only_fields = ['pk', 'timestamp']
 
 		lookup_field = 'id'
+
+
+	def get_subtopics(self, obj):
+		return [x.label for x in obj.subtopics.all()]
 
 	def get_timestamp_human(self, obj):
 		return timesince(obj.timestamp)
