@@ -214,7 +214,7 @@ class TopicViewSet(viewsets.ModelViewSet):
 	serializer_class 	= TopicSerializer
 	queryset 			= Topic.objects.all()
 	filter_backends 	= [SearchFilter, OrderingFilter]
-	search_fields 		= ['name', 'about', 'describtion', 'label']
+	search_fields 		= ['name', 'about']
 	permission_classes	= [IsOwnerOrReadOnly]
 	pagination_class	= CustomPageNumberPagination
 	lookup_field		= 'label'
