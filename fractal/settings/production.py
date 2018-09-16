@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -169,10 +170,46 @@ CORS_ALLOW_METHODS = [
 ]
 
 
+
+
+
 # Amazon settings
-AWS_ACCESS_KEY_ID = 'AKIAJY7MCEP7D7AIHLCQ'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'fractal-artur'
+
+from storages.backends.s3boto3 import S3Boto3Storage
+
+StaticRootS3BotoStorage = lambda: S3Boto3Storage(location='static')
+MediaRootS3BotoStorage  = lambda: S3Boto3Storage(location='media')
+
+import datetime
+
+# AWS_FILE_EXPIRE = 200
+# AWS_PRELOAD_METADATA = True
+# AWS_QUERYSTRING_AUTH = True
+
+# DEFAULT_FILE_STORAGE = '<your-project>.aws.utils.MediaRootS3BotoStorage'
+# STATICFILES_STORAGE = 'fractal.aws.utils.StaticRootS3BotoStorage'
+# AWS_STORAGE_BUCKET_NAME = 'fractal-bucket'
+# S3DIRECT_REGION = 'us-west-2'
+# S3_URL = '//%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+# MEDIA_URL = '//%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
+# MEDIA_ROOT = MEDIA_URL
+# STATIC_URL = S3_URL + 'static/'
+# ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+
+# two_months = datetime.timedelta(days=61)
+# date_two_months_later = datetime.date.today() + two_months
+# expires = date_two_months_later.strftime("%A, %d %B %Y 20:00:00 GMT")
+
+# AWS_HEADERS = { 
+#     'Expires': expires,
+#     'Cache-Control': 'max-age=%d' % (int(two_months.total_seconds()), ),
+# }
+
+
+
+AWS_ACCESS_KEY_ID = "AKIAIOHPAJCHPMGZSSMA"
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_STORAGE_BUCKET_NAME = 'fractal-bucket'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
@@ -182,6 +219,30 @@ AWS_LOCATION_MEDIA = 'media'
 
 MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION_MEDIA)
 DEFAULT_FILE_STORAGE = 'fractal.storage_backends.MediaStorage'
+
+AWS_LOCATION = 'static'
+AWS_LOCATION_MEDIA = 'media'
+
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'fractal/static'),
+]
+
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION_MEDIA)
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+DEFAULT_FILE_STORAGE = 'fractal.storage_backends.MediaStorage'
+
+
+# S3DIRECT_REGION = 'us-west-2'
+# ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+
+
+
+
+
+
 
 
 # REST_FRAMEWORK SETTINGS

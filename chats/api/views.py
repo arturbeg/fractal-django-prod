@@ -166,14 +166,17 @@ class ProfileViewSet(viewsets.ModelViewSet):
 		profile = self.get_object()
 		queryset = profile.followers.all()
 
-		serializer = UserSerializer(queryset, many=True, context={'request':request})
+		queryset_followers = [x.profile for x in queryset]
+
+		serializer = ProfileSerializer(queryset_followers, many=True, context={'request':request})
 		return Response(serializer.data)
 
 
 	@detail_route()
 	def following(self, request, *args, **kwargs):
 		profile = self.get_object()
-		queryset = profile.is_following.all()
+		user = profile.user
+		queryset = user.is_following.all()
 
 		serializer = self.get_serializer(queryset, many=True, context={'request':request})
 		return Response(serializer.data)
