@@ -42,7 +42,16 @@ class Topic(models.Model):
 		except:
 			return "No messages in the chat"
 				
+	def messages(self):
+		# all the messages in the topic
+		from interactive.models import Message
+		messages = Message.objects.filter(topic__id=self.id)		
+		return messages
 
+	def serialized_topic(self, request):
+		from chats.api.serializers import TopicSerializer
+		topicSerializer = TopicSerializer(self, context={"request": request})
+		return topicSerializer.data
 		
 
 	# not elegant	

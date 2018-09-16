@@ -28,6 +28,10 @@ class Message(models.Model):
 	timestamp 		= models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
 	subtopics		= models.ManyToManyField(Topic, blank=True, related_name="referencing_messages")
+
+	# Possibly temporary
+	# Do determine how many unread messages the user has
+	seen_by			= models.ManyToManyField(User, blank=True, related_name="seen_messages")
 	
 
 	def __str__(self):

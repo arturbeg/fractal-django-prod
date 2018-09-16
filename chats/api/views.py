@@ -148,6 +148,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 		return Response(serializer.data)
 
+		
+
 	# Chatgroups that are followed by the user
 	@detail_route()
 	def chatgroups(self, request, *args, **kwargs):
@@ -174,17 +176,34 @@ class ProfileViewSet(viewsets.ModelViewSet):
 		queryset = profile.is_following.all()
 
 		serializer = self.get_serializer(queryset, many=True, context={'request':request})
-		return Response(serializer.data)	
+		return Response(serializer.data)
+
+	@detail_route()		
+	def saved_topics(self, request, *args, **kwargs):
+		profile = self.get_object()
+		user = profile.user
+		queryset = Topic.objects.filter(saves=user)
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = TopicSerializer(page, many=True, context={'request': request})
+			return self.get_paginated_response(serializer.data)
+
+		serializer = TopicSerializer(page, many=True, context={'request': request})	
+		return Response(serializer.data)
 
 	@detail_route()
 	def posts(self, request, *args, **kwargs):
 		profile = self.get_object()
 		user = profile.user
-		queryset = Post.objects.filter(message__user=user)	
+		queryset = Post.objects.filter(message__user=user)
 
+		page = self.paginate_queryset(queryset)
 
-		serializer = PostSerializer(queryset, many=True, context={'request': request})
+		if page is not None:
+			serializer = PostSerializer(page, many=True, context={'request': request})
+			return self.get_paginated_response(serializer.data)
 
+		serializer = PostSerializer(page, many=True, context={'request': request})	
 		return Response(serializer.data)
 
 	@detail_route()
@@ -234,6 +253,18 @@ class TopicViewSet(viewsets.ModelViewSet):
 	# Extra actions for routing
 	
 	
+	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
+	def all_messages_seen(self, request, *args, **kwargs):
+		user = request.user
+		topic = self.get_object()
+
+		topicMessages = topic.messages()
+
+		for message in topicMessages:
+			message.seen_by.add(user)
+
+		return Response(topic.serialized_topic(request))
+
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
 	def upvote(self, request, *args, **kwargs):
 		user = request.user

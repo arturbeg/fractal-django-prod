@@ -36,6 +36,8 @@ class MessageSerializer(serializers.ModelSerializer):
 
 	subtopics    	= serializers.SerializerMethodField()
 
+	seen 			= serializers.SerializerMethodField()
+
 	class Meta:
 		model = Message
 		# fields = ['url', 'pk', 'user', 'globalchat', 'localchat', 'topic', 'text', 'photo', 
@@ -43,12 +45,17 @@ class MessageSerializer(serializers.ModelSerializer):
 
 		# read_only_fields = ['user', 'pk', 'user', 'timestamp']
 		# sender is the profile of the user presented in a nested mannder
-		fields = ['id', 'text', 'timestamp', 'topic_object', 'user', 'sender', 'likers_count', 'shared', 'timestamp_human', 'topic', 'subtopics']
+		fields = ['id', 'text', 'timestamp', 'topic_object', 'user', 'sender', 'likers_count', 'shared', 'timestamp_human', 'topic', 'subtopics', 'seen']
 
 		read_only_fields = ['pk', 'timestamp']
 
 		lookup_field = 'id'
 
+	def get_seen(self, obj):
+		request = self.context.get("request")
+		user = request.user
+		seen = obj.seen_by.filter(id=user.id).exists()
+		return seen	
 
 	def get_subtopics(self, obj):
 		return [x.label for x in obj.subtopics.all()]

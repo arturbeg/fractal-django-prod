@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from chats.models import ChatGroup, GlobalChat, LocalChat, Topic, Profile
 from .validators import lowercase
-# Can have a LocalChat serializer class for the Topic and LocalChat (for now keep it simple)
 
 
 
@@ -151,11 +150,13 @@ class TopicSerializer(serializers.ModelSerializer):
 	downvoted				= serializers.SerializerMethodField()
 	saved					= serializers.SerializerMethodField()
 
+	number_of_unread_messages			= serializers.SerializerMethodField()
+
 
 	class Meta:
 		model 				= Topic
 		#fields 				= [ 'url', 'chatgroup', 'id', 'name', 'owner', 'about', 'description', 'label', 'timestamp', 'avatar', 'arrow_ups', 'arrow_downs', 'saves', 'online_participants']
-		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'chatgroup_object', 'participants', 'most_recent_message', 'owner', 'upvoted', 'downvoted', 'saved']
+		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'chatgroup_object', 'participants', 'most_recent_message', 'owner', 'upvoted', 'downvoted', 'saved', 'number_of_unread_messages']
 		read_only_fields	= ['label']
 		lookup_field		= 'label'
 		# extra_kwargs		= {
@@ -168,6 +169,18 @@ class TopicSerializer(serializers.ModelSerializer):
 		# 	'arrow_downs':  		{'lookup_field': 'username'},
 		# }	
 
+	def get_number_of_unread_messages(self, obj):
+		from interactive.models import Message
+		request = self.context.get("request")
+		user = request.user
+		# messages in the topic
+		topicMessages = Message.objects.filter(topic__id=obj.id)
+		total_topic_messages = topicMessages.all().count()
+		total_topic_seen_messages = topicMessages.filter(seen_by__id=user.id)
+		number_of_unread_messages = total_topic_messages - total_topic_seen_messages.count()
+		return number_of_unread_messages
+
+		
 	def get_chatgroup_object(self, obj):
 		request = self.context.get("request")	
 		chatgroup = obj.chatgroup
