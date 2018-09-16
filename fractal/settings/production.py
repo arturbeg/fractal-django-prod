@@ -190,7 +190,9 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 DEFAULT_FILE_STORAGE = 'fractal.storage_backends.MediaStorage'
 
+# https://s3.eu-west-2.amazonaws.com/fractal-bucket/media/profile_avatar/artur-pic.jpg
 
+MEDIA_URL = 'https://s3.eu-west-2.amazonaws.com/fractal-bucket/media/'
 
 
 # S3DIRECT_REGION = 'us-west-2'

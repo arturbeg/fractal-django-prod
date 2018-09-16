@@ -17,14 +17,19 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 	user_id				= serializers.SerializerMethodField()			
 
+	avatar_url			= serializers.SerializerMethodField()
+
 	class Meta:
 		model 				= Profile
 		fields 				= [
 								'id', 'about', 'label', 'followers_count', 'following_count',
-								'chatgroups_count', 'followed', 'user_id'
+								'chatgroups_count', 'followed', 'user_id', 'avatar_url'
 							  ] 
 		read_only_fields 	= ['id']
 		lookup_field		= 'label'
+
+	def get_avatar_url(self, obj):
+		return obj.get_absolute_url_for_avatar()	
 
 	def get_user_id(self, obj):
 		return obj.user.id
