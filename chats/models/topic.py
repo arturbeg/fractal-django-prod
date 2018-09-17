@@ -34,13 +34,21 @@ class Topic(models.Model):
 	def rating(self):
 		return self.arrow_ups.count() - self.arrow_downs.count()
 
-	def most_recent_message(self):
-
+	def most_recent_message_text(self, request):
 		try:
 			message = self.topic_messages.latest('id')
-			return message.text
+			message_text = message.text
+			return message_text
 		except:
-			return "No messages in the chat"
+			return None
+
+	def most_recent_message_avatar(self, request):
+		try:
+			message = self.topic_messages.latest('id')
+			message_avatar = message.user.profile.avatar.url
+			return message_avatar
+		except:
+			return None	
 				
 	def messages(self):
 		# all the messages in the topic

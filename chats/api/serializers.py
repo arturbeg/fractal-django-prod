@@ -17,19 +17,19 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 	user_id				= serializers.SerializerMethodField()			
 
-	avatar_url			= serializers.SerializerMethodField()
+	# avatar_url			= serializers.SerializerMethodField()
 
 	class Meta:
 		model 				= Profile
 		fields 				= [
 								'id', 'about', 'label', 'followers_count', 'following_count',
-								'chatgroups_count', 'followed', 'user_id', 'avatar_url'
+								'chatgroups_count', 'followed', 'user_id', 'avatar'
 							  ] 
 		read_only_fields 	= ['id']
 		lookup_field		= 'label'
 
-	def get_avatar_url(self, obj):
-		return obj.get_absolute_url_for_avatar()	
+	# def get_avatar_url(self, obj):
+	# 	return obj.get_absolute_url_for_avatar()	
 
 	def get_user_id(self, obj):
 		return obj.user.id
@@ -142,9 +142,10 @@ class TopicSerializer(serializers.ModelSerializer):
 
 
 	# Difference between the arrow_ups and arrow_downs
-	rating 					= serializers.SerializerMethodField()
-	participants    		= serializers.SerializerMethodField()
-	most_recent_message		= serializers.SerializerMethodField()
+	rating 								= serializers.SerializerMethodField()
+	participants    					= serializers.SerializerMethodField()
+	most_recent_message_text			= serializers.SerializerMethodField()
+	most_recent_message_sender_avatar 	= serializers.SerializerMethodField()
 	# Use chatgroup URL later
 	chatgroup_object		= serializers.SerializerMethodField()
 	chatgroup			= serializers.SlugRelatedField(slug_field='label', queryset=ChatGroup.objects.all())	
@@ -161,7 +162,7 @@ class TopicSerializer(serializers.ModelSerializer):
 	class Meta:
 		model 				= Topic
 		#fields 				= [ 'url', 'chatgroup', 'id', 'name', 'owner', 'about', 'description', 'label', 'timestamp', 'avatar', 'arrow_ups', 'arrow_downs', 'saves', 'online_participants']
-		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'chatgroup_object', 'participants', 'most_recent_message', 'owner', 'upvoted', 'downvoted', 'saved', 'number_of_unread_messages']
+		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'chatgroup_object', 'participants', 'most_recent_message_text', 'owner', 'upvoted', 'downvoted', 'saved', 'number_of_unread_messages', 'most_recent_message_sender_avatar']
 		read_only_fields	= ['label']
 		lookup_field		= 'label'
 		# extra_kwargs		= {
@@ -204,9 +205,13 @@ class TopicSerializer(serializers.ModelSerializer):
 		request = self.context.get("request")
 		return obj.downvoted(request)  	
 
-	def get_most_recent_message(self, obj):
-		message = obj.most_recent_message()
-		return message	
+	def get_most_recent_message_sender_avatar(self, obj):
+		return obj.most_recent_message_avatar(self.context.get("request"))
+
+
+	def get_most_recent_message_text(self, obj):
+		return obj.most_recent_message_text(self.context.get("request"))
+
 
 	def get_rating(self, obj):
 		return obj.rating()
