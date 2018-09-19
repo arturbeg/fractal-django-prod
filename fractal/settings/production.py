@@ -49,7 +49,24 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'fractal.middleware.ActiveUserMiddleware',
 ]
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'default-cache'
+    }
+}
+
+
+
+USER_ONLINE_TIMEOUT = 300*5
+USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
+
+
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -218,7 +235,6 @@ REST_FRAMEWORK = {
 
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
-
 
 
 

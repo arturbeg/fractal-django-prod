@@ -15,7 +15,9 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 	followed			= serializers.SerializerMethodField()
 
-	user_id				= serializers.SerializerMethodField()			
+	user_id				= serializers.SerializerMethodField()
+
+	online		= serializers.SerializerMethodField()		
 
 	# avatar_url			= serializers.SerializerMethodField()
 
@@ -23,13 +25,13 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 		model 				= Profile
 		fields 				= [
 								'id', 'about', 'label', 'followers_count', 'following_count',
-								'chatgroups_count', 'followed', 'user_id', 'avatar'
+								'chatgroups_count', 'followed', 'user_id', 'avatar', 'online'
 							  ] 
 		read_only_fields 	= ['id']
 		lookup_field		= 'label'
 
-	# def get_avatar_url(self, obj):
-	# 	return obj.get_absolute_url_for_avatar()	
+	def get_online(self, obj):
+		return obj.online()	
 
 	def get_user_id(self, obj):
 		return obj.user.id
