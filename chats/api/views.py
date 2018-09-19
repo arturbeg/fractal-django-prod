@@ -267,15 +267,16 @@ class TopicViewSet(viewsets.ModelViewSet):
 	def get_serializer_context(self):
 		return {'request': self.request}
 
-	def list(self, request, *args, **kwargs):
-		queryset = Topic.objects.all()
-		queryset = sorted(queryset, key=lambda x: x.hot(), reverse=True)
-		page = self.paginate_queryset(queryset)
-		if page is not None:
-			serializer = TopicSerializer(page, many=True, context={'request': request})
-			return self.get_paginated_response(serializer.data)
-		serializer = TopicSerializer(queryset, many=True, context={'request': request})	
-		return Response(serializer.data)
+	# BELOW CODE FUCKS UP SEARCH -> NEEDS MORE THINKING (WORKS FINE WITH DETAIL_ROUTES)	
+	# def list(self, request, *args, **kwargs):
+	# 	queryset = Topic.objects.all()
+	# 	queryset = sorted(queryset, key=lambda x: x.hot(), reverse=True)
+	# 	page = self.paginate_queryset(queryset)
+	# 	if page is not None:
+	# 		serializer = TopicSerializer(page, many=True, context={'request': request})
+	# 		return self.get_paginated_response(serializer.data)
+	# 	serializer = TopicSerializer(queryset, many=True, context={'request': request})	
+	# 	return Response(serializer.data)
 	# Extra actions for routing
 	
 	
