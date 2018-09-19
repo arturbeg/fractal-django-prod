@@ -142,29 +142,30 @@ class ChatGroupSerializer(serializers.HyperlinkedModelSerializer):
 class TopicSerializer(serializers.ModelSerializer):
 	
 
-
 	# Difference between the arrow_ups and arrow_downs
 	rating 								= serializers.SerializerMethodField()
 	participants    					= serializers.SerializerMethodField()
 	most_recent_message_text			= serializers.SerializerMethodField()
 	most_recent_message_sender_avatar 	= serializers.SerializerMethodField()
 	# Use chatgroup URL later
-	chatgroup_object		= serializers.SerializerMethodField()
-	chatgroup			= serializers.SlugRelatedField(slug_field='label', queryset=ChatGroup.objects.all())	
+	chatgroup_object					= serializers.SerializerMethodField()
+	chatgroup							= serializers.SlugRelatedField(slug_field='label', queryset=ChatGroup.objects.all())	
 
-	owner 					= serializers.SerializerMethodField()
+	owner 								= serializers.SerializerMethodField()
 
-	upvoted					= serializers.SerializerMethodField()
-	downvoted				= serializers.SerializerMethodField()
-	saved					= serializers.SerializerMethodField()
+	upvoted								= serializers.SerializerMethodField()
+	downvoted							= serializers.SerializerMethodField()
+	saved								= serializers.SerializerMethodField()
 
 	number_of_unread_messages			= serializers.SerializerMethodField()
+
+	ranking 							= serializers.SerializerMethodField()
 
 
 	class Meta:
 		model 				= Topic
 		#fields 				= [ 'url', 'chatgroup', 'id', 'name', 'owner', 'about', 'description', 'label', 'timestamp', 'avatar', 'arrow_ups', 'arrow_downs', 'saves', 'online_participants']
-		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'chatgroup_object', 'participants', 'most_recent_message_text', 'owner', 'upvoted', 'downvoted', 'saved', 'number_of_unread_messages', 'most_recent_message_sender_avatar']
+		fields 				= ['id', 'name', 'about', 'label', 'rating', 'chatgroup', 'chatgroup_object', 'participants', 'most_recent_message_text', 'owner', 'upvoted', 'downvoted', 'saved', 'number_of_unread_messages', 'most_recent_message_sender_avatar', 'ranking']
 		read_only_fields	= ['label']
 		lookup_field		= 'label'
 		# extra_kwargs		= {
@@ -176,6 +177,9 @@ class TopicSerializer(serializers.ModelSerializer):
 		# 	'arrow_ups':  			{'lookup_field': 'username'},
 		# 	'arrow_downs':  		{'lookup_field': 'username'},
 		# }	
+
+	def get_ranking(self, obj):
+		return obj.hot()
 
 	def get_number_of_unread_messages(self, obj):
 		from interactive.models import Message

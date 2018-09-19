@@ -15,6 +15,7 @@ from .serializers import MessageSerializer, PostSerializer, PostCommentSerialize
 
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticated
+from .pagination import CustomPageNumberPagination
 # Configure post saves + add post_save signals where necessary
 # Reconfigure permissions if necessary
 
@@ -24,7 +25,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 	filter_backends 	= [SearchFilter, OrderingFilter]
 	search_fields 		= ['text']
-
+	pagination_class	= CustomPageNumberPagination
 	permission_classes	= [IsOwnerOrReadOnly]
 	lookup_field		= 'id'	
 

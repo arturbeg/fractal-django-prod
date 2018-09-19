@@ -5,6 +5,8 @@ from rest_framework.reverse import reverse as api_reverse
 from .localchat import LocalChat
 from .utilities import unique_label_generator
 from django.db.models.signals import post_save, pre_save
+from .topic_ranking import *
+import datetime
 
 User = settings.AUTH_USER_MODEL
 
@@ -29,8 +31,14 @@ class Topic(models.Model):
 
 
 	def __str__(self):
-		return self.name	
+		return self.name
 
+	def hot(self):
+		date = self.timestamp
+		## CONFIGURE TIMEZONES... (SEPARATE DJANGO RESEARCH)
+		date = date.replace(tzinfo=None)
+		return hot(self.arrow_ups.count(), self.arrow_downs.count(), date)
+					
 	def rating(self):
 		return self.arrow_ups.count() - self.arrow_downs.count()
 

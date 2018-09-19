@@ -33,6 +33,8 @@ class Profile(models.Model):
         return self.user.username
 
     def last_seen(self):
+        print(cache.get('seen_%s' % self.user.username))
+
         return cache.get('seen_%s' % self.user.username)            
     
     def online(self):

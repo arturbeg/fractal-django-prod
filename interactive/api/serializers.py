@@ -45,7 +45,9 @@ class MessageSerializer(serializers.ModelSerializer):
 
 		# read_only_fields = ['user', 'pk', 'user', 'timestamp']
 		# sender is the profile of the user presented in a nested mannder
-		fields = ['id', 'text', 'timestamp', 'topic_object', 'user', 'sender', 'likers_count', 'shared', 'timestamp_human', 'topic', 'subtopics', 'seen']
+		fields = ['id', 'text', 'timestamp', 'topic_object', 'user', 'sender', 
+		'likers_count', 'shared', 'timestamp_human', 'topic', 
+		'subtopics', 'seen', 'photo']
 
 		read_only_fields = ['pk', 'timestamp']
 
@@ -93,11 +95,11 @@ class MessageSerializer(serializers.ModelSerializer):
 
 	# if the message is of the text type, make sure it's nonempty
 
-	def validate_text(self, value):
-		if value.isspace():
-			raise serializers.ValidationError('The message must contain some nonempty content type')
+	# def validate_text(self, value):
+	# 	if value.isspace():
+	# 		raise serializers.ValidationError('The message must contain some nonempty content type')
 
-		return value	
+	# 	return value	
 
 
 class PostSerializer(serializers.ModelSerializer):

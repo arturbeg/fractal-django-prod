@@ -74,6 +74,7 @@ class ChatGroupViewSet(viewsets.ModelViewSet):
 	def topics(self, request, *args, **kwargs):
 		chatgroup = self.get_object()
 		queryset = Topic.objects.filter(chatgroup=chatgroup)
+		queryset = sorted(queryset, key=lambda x: x.hot(), reverse=True)
 		serializer = TopicSerializer(queryset, many=True, context={'request':request})
 
 		return Response(serializer.data)
@@ -143,8 +144,15 @@ class ProfileViewSet(viewsets.ModelViewSet):
 		profile = self.get_object()
 		
 		queryset = Topic.objects.filter(chatgroup__members__id=profile.user.id)
+		## REDDIT RANKING.., hot used when topic object, rankign in DRF -> TODO: MAKE THEM SAME
+		queryset = sorted(queryset, key=lambda x: x.hot(), reverse=True)
 
-		serializer = TopicSerializer(queryset, many=True, context={'request':request})
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = TopicSerializer(page, many=True, context={'request': request})
+			return self.get_paginated_response(serializer.data)
+
+		serializer = TopicSerializer(page, many=True, context={'request': request})
 
 		return Response(serializer.data)
 
@@ -187,6 +195,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 		user = profile.user
 		queryset = Topic.objects.filter(saves=user)
 		page = self.paginate_queryset(queryset)
+		## ADD DIFFERENT RANKING LATER
 		if page is not None:
 			serializer = TopicSerializer(page, many=True, context={'request': request})
 			return self.get_paginated_response(serializer.data)
@@ -198,7 +207,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 	def posts(self, request, *args, **kwargs):
 		profile = self.get_object()
 		user = profile.user
-		queryset = Post.objects.filter(message__user=user)
+		queryset = Post.objects.filter(message__user=user).order_by('-timestamp')
 
 		page = self.paginate_queryset(queryset)
 
@@ -214,13 +223,20 @@ class ProfileViewSet(viewsets.ModelViewSet):
 		profile = self.get_object()
 		user = profile.user
 		
-		following = user.is_following.all()
+		following = profile.user.is_following.all()
 
-		queryset = Post.objects.filter(message__user__profile=following)
+		queryset = Post.objects.filter(message__user__profile__in=following).order_by('-timestamp')
+		
+		page = self.paginate_queryset(queryset)
 
-		serializer = PostSerializer(queryset, many=True, context={'request': request})
+		if page is not None:
+			serializer = PostSerializer(page, many=True, context={'request': request})
+			return self.get_paginated_response(serializer.data)
+
+		serializer = PostSerializer(page, many=True, context={'request': request})	
 		
 		return 	Response(serializer.data)
+
 
 
 # Topic View Set
@@ -243,16 +259,23 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 
 	def perform_create(self, serializer):
-
 		serializer.save(owner=self.request.user)
 
-	
 	def post(self, request, *args, **kwargs):
 		return self.create(request, *args, **kwargs)
 
-
 	def get_serializer_context(self):
 		return {'request': self.request}
+
+	def list(self, request, *args, **kwargs):
+		queryset = Topic.objects.all()
+		queryset = sorted(queryset, key=lambda x: x.hot(), reverse=True)
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = TopicSerializer(page, many=True, context={'request': request})
+			return self.get_paginated_response(serializer.data)
+		serializer = TopicSerializer(queryset, many=True, context={'request': request})	
+		return Response(serializer.data)
 	# Extra actions for routing
 	
 	
