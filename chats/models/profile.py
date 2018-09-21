@@ -32,6 +32,11 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    def get_serialized_profile(self, request):
+        from chats.api.serializers import ProfileSerializer
+        profileSerializer = ProfileSerializer(self, context={"request": request})
+        return profileSerializer.data
+
     def last_seen(self):
         print(cache.get('seen_%s' % self.user.username))
 

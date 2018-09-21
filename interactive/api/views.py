@@ -19,6 +19,34 @@ from .pagination import CustomPageNumberPagination
 # Configure post saves + add post_save signals where necessary
 # Reconfigure permissions if necessary
 
+class NotificationViewSet(viewsets.ModelViewSet):
+	serializer_class 	= NotificationSerializer
+	queryset 	     	= Notification.objects.all()
+	pagination_class	= CustomPageNumberPagination
+	permission_classes	= [IsAuthenticated]
+	lookup_field		= 'id'
+	filter_backends 	= [SearchFilter, OrderingFilter]
+	search_fields 		= ['sender']
+
+	def perform_create(self, serializer):
+		serializer.save(sender=self.request.user.profile)
+	def post(self, request, *args, **kwargs):
+		return self.create(request, *args, **kwargs)
+	def get_serializer_context(self):
+		return {'request':self.request}	
+	def get_queryset(self, *args, **kwargs):
+		queryset_list 	= Notification.objects.all()
+		query 		  	= self.request.GET.get('receiver')
+		chatgroup_query = self.request.GET.get('chatgroup_label')
+		if query:
+			queryset_list = Notification.objects.filter(receiver__label=query)
+		elif chatgroup_query:
+			queryset_list = Notification.objects.filter(chatgroup__label=chatgroup_query)	
+		return queryset_list
+
+
+
+
 class MessageViewSet(viewsets.ModelViewSet):
 	serializer_class 	= MessageSerializer
 	queryset 			= Message.objects.all()
@@ -64,7 +92,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
 	def like(self, request, *args, **kwargs):
-
+		from interactive.models import Notification
 		user = request.user
 		message = self.get_object()
 
@@ -77,7 +105,14 @@ class MessageViewSet(viewsets.ModelViewSet):
 			return Response(messageSerializerData)
 		else:
 			message.likers.add(user)
-
+			### NOTIFICATION ###
+			Notification.objects.create(
+				text="LIK",
+				sender=user.profile,
+				receiver=message.user.profile,
+				message=message
+			)
+			### NOTIFICATION FINISHED ###	
 			messageSerializer = MessageSerializer(message, context={'request': self.request})
 			messageSerializerData = messageSerializer.data
 
@@ -130,13 +165,6 @@ class PostCommentViewSet(viewsets.ModelViewSet):
 	filter_backends 	= [SearchFilter, OrderingFilter]
 	search_fields 		= ['text']
 
-	permission_classes	= [IsOwnerOrReadOnly]	
-
-
-class NotificationViewSet(viewsets.ModelViewSet):
-	serializer_class 	= NotificationSerializer
-	queryset 			= Notification.objects.all()
-
-	filter_backends 	= [OrderingFilter]	
+	permission_classes	= [IsOwnerOrReadOnly]		
 
 

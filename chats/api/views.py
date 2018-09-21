@@ -54,7 +54,7 @@ class ChatGroupViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
 	def follow(self, request, *args, **kwargs):
-
+		from interactive.models import Notification
 		user = request.user
 		chatgroup = self.get_object()
 
@@ -66,7 +66,13 @@ class ChatGroupViewSet(viewsets.ModelViewSet):
 			return Response(chatGroupSerializer.data)
 		else:
 			chatgroup.members.add(user)
-			
+			### Notification Started ###
+			Notification.objects.create(
+				text="FOLCG",
+				sender=user.profile,
+				chatgroup=chatgroup
+			)
+			### NOTIFICATION FINISHED ###
 			chatGroupSerializer = ChatGroupSerializer(chatgroup, context={'request':request})
 			return Response(chatGroupSerializer.data)
 
@@ -122,6 +128,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['post', 'get'], permission_classes = [IsAuthenticated])
 	def follow(self, request, *args, **kwargs):
+		from interactive.models import Notification
 		profile = self.get_object()
 		user = request.user
 
@@ -134,6 +141,13 @@ class ProfileViewSet(viewsets.ModelViewSet):
 			return Response(profileSerializer.data)
 		else:
 			profile.followers.add(user)
+			### NOTIFICATION ###
+			Notification.objects.create(
+				text="FOL",
+				sender=user.profile,
+				receiver=profile
+			)
+			### NOTIFICATION ENDS ###
 			profileSerializer = self.get_serializer(profile, context={'request':request})
 
 			return Response(profileSerializer.data)	

@@ -14,6 +14,7 @@ from chats.api.serializers import ProfileSerializer
 from django.utils.timesince import timesince
 
 
+
 # TODO: change back to HyperLinked
 class MessageSerializer(serializers.ModelSerializer):
 	
@@ -121,6 +122,43 @@ class PostSerializer(serializers.ModelSerializer):
 		return timesince(obj.timestamp)	
 
 
+from chats.api.serializers import ChatGroupSerializer
+class NotificationSerializer(serializers.ModelSerializer):
+
+	sender_object   			= serializers.SerializerMethodField()
+	receiver_object				= serializers.SerializerMethodField()
+	timestamp_human 		    = serializers.SerializerMethodField()
+	sender 						= serializers.SlugRelatedField(slug_field='label', queryset=Profile.objects.all())
+	receiver 					= serializers.SlugRelatedField(slug_field='label', queryset=Profile.objects.all())
+	message   					= MessageSerializer()
+	chatgroup 					= ChatGroupSerializer()
+
+	class Meta:
+		model = Notification
+		fields = ['id', 'text', 'sender', 'receiver', 'timestamp_human', 'sender_object', 'receiver_object', 'message', 'chatgroup']
+		read_only_fields = ['id', 'text', 'sender', 'receiver', 'timestamp_human', 'sender_object', 'receiver_object', 'message', 'chatgroup']
+
+
+	def get_sender_object(self, obj):
+		profile = obj.sender
+		request = self.context.get("request")
+		return profile.get_serialized_profile(request)
+
+	def get_receiver_object(self, obj):
+		if obj.receiver:
+			profile = obj.receiver
+			request = self.context.get("request")
+			return profile.get_serialized_profile(request)	
+		else:
+			return None	
+
+	def get_timestamp_human(self, obj):
+		return timesince(obj.timestamp)	
+
+
+
+
+
 
 
 # Do later...
@@ -130,13 +168,4 @@ class PostCommentSerializer(serializers.HyperlinkedModelSerializer):
 		model = Message
 		fields = ['url', 'pk', 'user', 'post', 'text', 'likers', 'dislikers', 'timestamp']	
 
-		read_only_fields = ['url', 'pk', 'user', 'timestamp']	
-
-
-class NotificationSerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = Notification
-		fields = ['url', 'pk', 'text', 'user', 'user2', 'message', 'post', 'postcomment', 'timestamp']
-
-		# user, user2?
-		read_only_fields = ['url', 'pk', 'timestamp']
+		read_only_fields = ['url', 'pk', 'user', 'timestamp']
